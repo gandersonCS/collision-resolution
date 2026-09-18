@@ -82,6 +82,35 @@ public class CollisionResolutionExampleGame : Game
                     balls[j].Colliding = true;
 
                     // TODO: Handle collisions
+                    balls[i].Center -= balls[i].Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    balls[i].Center -= balls[j].Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    Vector2 collisionAxis = balls[i].Center - balls[j].Center;
+                    collisionAxis.Normalize();
+                    float angle = (float)System.Math.Acos(Vector2.Dot(collisionAxis, Vector2. UnitX));
+
+                    float m0 = balls[i].Mass;
+                    float m1 = balls[j].Mass;
+
+                    Vector2 u0 = Vector2.Transform(balls[i].Velocity, Matrix.CreateRotationZ(angle));
+                    Vector2 u1 = Vector2.Transform(balls[j].Velocity, Matrix.CreateRotationZ(angle));
+
+                    Vector2 v0;
+                    Vector2 v1;
+                    v0.X = ((m0 - m1) / (m0 + m1)) * u0.X + ((2 * m1) / (m0 + m1)) * u1.X;
+                    v1.X = ((2 * m0) / (m0 + m1)) * u0.X + ((m1 - m0) / (m0 + 1)) * u1.X;
+                    v0.Y = u0.Y;
+                    v1.Y = u1.Y;
+
+                    balls[i].Velocity = Vector2.Transform(v0, Matrix.CreateRotationZ(-angle));
+                    balls[j].Velocity = Vector2.Transform(v1, Matrix.CreateRotationZ(-angle));
+
+                    balls[i].Center -= balls[i].Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    balls[i].Center -= balls[j].Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+
+
+
 
                 }
             }
